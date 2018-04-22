@@ -1,0 +1,4 @@
+/bug-restful-api/dist/*
+/bug-restful-api/node_modules/*
+/bug-restful-api/.idea/*
+/bug-restful-api/bin/*
