@@ -5,7 +5,14 @@ const cookieParser = require( 'cookie-parser' );
 const bodyParser = require( 'body-parser' );
 
 const index = require( './routes/index' );
-const users = require( './routes/users' );
+// const users = require( './routes/users' );
+
+import apiRegistration from './src/api/registeration';
+import authorization from './src/util/middleware/authorization';
+import loginRequired from './src/util/middleware/login-required';
+import { exceptionLogger } from './src/util/middleware/exception-logger';
+import { errorResponse } from './src/util/middleware/error-response';
+import authRoute from './src/api/auth/auth';
 
 const app = express();
 
@@ -23,18 +30,34 @@ app.use( bodyParser.urlencoded( { extended: false } ) );
 app.use( cookieParser() );
 app.use( express.static( path.join( __dirname, 'public' ) ) );
 
+//public we interface
 app.use( '/', index );
-app.use( '/users', users );
+//app.use( '/users', users );
 
-// catch 404 and forward to error handler
-app.use( function ( req, res, next ){
-  var err = new Error( 'Not Found' );
-  err.status = 404;
-  next( err );
-} );
+//check auth
+app.use( authorization );
 
+//login
+app.use( '/api/auth/', authRoute );
+
+// login required for all api
+app.use( loginRequired );
+
+// api
+apiRegistration( app );
+
+// // catch 404 and forward to error handler
+// app.use( function ( req, res, next ){
+//   const err = new Error( 'Not Found' );
+//   err.status = 404;
+//   next( err );
+// } );
 
 // error handler
+app.use( exceptionLogger ); // log to file or log server
+app.use( errorResponse ); // send to user
+
+
 app.use( function ( err, req, res, next ){
   // set locals, only providing error in development
   res.locals.message = err.message;

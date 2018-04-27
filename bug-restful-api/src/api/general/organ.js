@@ -1,6 +1,6 @@
 const express = require( 'express' );
 const router = express.Router();
-import { Sequelize, province } from '../../data-access/db';
+import { Sequelize, organ } from '../../data-access/db';
 
 router.get( '/list', getList );
 router.post( '/add', add );
@@ -8,28 +8,39 @@ router.post( '/add', add );
 module.exports = router;
 
 function getList( req, res, next ){
-  province.findAll( {} )
-          .then( data =>{
-            const list = data.map( x => x.dataValues );
-            res.send( list );
-          } )
-          .catch( err =>{
-            next( err )
-          } );
+
+  const organ_id = req.query[ 'organ_id' ];
+  const city_id = req.query[ 'city_id' ];
+
+  let clause = {};
+
+  if ( !!organ_id ) {
+    clause = { where: { organ_id } };
+  }else if ( !!city_id ) {
+    clause = { where: { city_id } };
+  }
+
+  organ.findAll( clause )
+       .then( data =>{
+         const list = data.map( x => x.dataValues );
+         res.send( list );
+       } )
+       .catch( next );
 }
 
 function add( req, res, next ){
 
-  if ( !req.body.province ) {
+  if ( !req.body.organ ) {
     next( { message: 'no data found in request body. body:{modelName:{...fields}}' } );
     return;
   }
 
   const dataModel = {
-    name: req.body.province[ 'name' ]
+    name: req.body.organ[ 'name' ] || '',
+    city_id: Number( req.body.organ[ 'city_id' ] || '0' ),
   };
 
-  province
+  organ
     .create( dataModel )
 
     .then( x =>{
