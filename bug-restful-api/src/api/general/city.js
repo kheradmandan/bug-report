@@ -1,8 +1,8 @@
 const express = require( 'express' );
 const router = express.Router();
-import db from '../../data-access/db';
-
-const { Sequelize, city } = db;
+// import db from '../../data-access/db';
+// const { Sequelize, city } = db;
+import { Sequelize, city } from '../../models';
 
 router.get( '/list', getList );
 router.post( '/add', add );

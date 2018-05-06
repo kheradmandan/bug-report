@@ -17,11 +17,11 @@ import authRoute from './src/api/auth/auth';
 const app = express();
 
 // import { db } from './src/data-access/db';
-import db from './src/models';
+import {sequelize} from './src/models';
 
-db.sequelize
-  .sync( { force: true } )
-  //.authenticate()
+sequelize
+  // .sync( { force: true } )
+  .authenticate()
   .then( () =>
     console.log( 'Success db conn' )
   ).catch( err =>
