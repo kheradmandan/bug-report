@@ -10,17 +10,17 @@ const index = require( './routes/index' );
 import apiRegistration from './src/api/registeration';
 import authorization from './src/util/middleware/authorization';
 import loginRequired from './src/util/middleware/login-required';
-import { exceptionLogger } from './src/util/middleware/exception-logger';
-import { errorResponse } from './src/util/middleware/error-response';
+import exceptionLogger from './src/util/middleware/exception-logger';
+import errorResponse from './src/util/middleware/error-response';
 import authRoute from './src/api/auth/auth';
 
 const app = express();
 
 // import { db } from './src/data-access/db';
-import {sequelize} from './src/models';
+import { sequelize } from './src/models';
 
 sequelize
-  // .sync( { force: true } )
+// .sync( { force: true } )
   .authenticate()
   .then( () =>
     console.log( 'Success db conn' )

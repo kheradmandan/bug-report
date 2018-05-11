@@ -5,7 +5,6 @@ import Sequelize from 'sequelize' ;
 const basename = path.basename( __filename );
 const env = process.env.NODE_ENV || 'development';
 const config = require( '../data-access/config.json' )[ env ];
-const db = {};
 
 let sequelize;
 if ( config.use_env_variable ) {
@@ -17,18 +16,18 @@ sequelize.options.define.underscored = true;
 sequelize.options.define.freezeTableName = true;
 
 //for intelligence support
-const proto=sequelize.Sequelize.Model;
-db.account = proto;
-db.city = proto;
-db.group = proto;
-db.organ = proto;
-db.province = proto;
-db.task = proto;
-
-db.op_flag = proto;
-db.op_role = proto;
-db.op_status = proto;
-
+const proto = sequelize.Model;
+const db = {
+  account: proto,
+  city: Sequelize.Model,
+  group: proto,
+  organ: proto,
+  province: proto,
+  task: proto,
+  op_flag: proto,
+  op_role: proto,
+  op_status: proto,
+};
 
 fs
   .readdirSync( __dirname )
