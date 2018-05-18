@@ -29,8 +29,11 @@ module.exports = function ( sequelize, DataTypes ){
       priority: { type: DataTypes.INTEGER, allowNull: false, notNull: true, isInt: true },
       op_status_id: { type: DataTypes.INTEGER, allowNull: false, notNull: true, isInt: true },
       op_flag_id: { type: DataTypes.INTEGER, allowNull: false, notNull: true, isInt: true },
-      created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: sequelize.fn( 'now' ) },
 
+      hashValue: { type: DataTypes.STRING( 32 ) },
+      history: { type: DataTypes.JSON },
+
+      created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: sequelize.fn( 'now' ) },
       updated_at: { type: DataTypes.DATE },
       deleted_at: { type: DataTypes.DATE },
       closed_at: { type: DataTypes.DATE },

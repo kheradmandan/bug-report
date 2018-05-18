@@ -1,7 +1,7 @@
 const opStatus = {
-  'default': 0,
+  'temp': 0,
   'active': 1,
-  'temp': 2,
+  'closed': 2,
   'removed': 3
 };
 

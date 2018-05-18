@@ -1,13 +1,14 @@
-const express = require( 'express' );
-const router = express.Router();
+import express from 'express';
 import { Sequelize, task } from '../../models';
 import { opStatus } from '../../util/common';
+import { BodyFormatError, OperationError } from '../../util/errors';
 
+
+const router = express.Router();
 router.post( '/create', createTemporary );
 router.put( '/update', update );
-router.post( '/present', createTemporary );
-router.post( '/close', createTemporary );
-// router.post( '/permanent', createTemporary );
+router.patch( '/present', present );
+router.patch( '/close', createTemporary );
 
 module.exports = router;
 
@@ -15,8 +16,7 @@ module.exports = router;
 function createTemporary( req, res, next ){
 
   if ( !req.body.task ) {
-    next( { message: 'no data found in request body. body:{modelName:{...fields}}' } );
-    return;
+    return next( new BodyFormatError() );
   }
 
   const dataModel = provideFromReq( req );
@@ -37,12 +37,13 @@ function createTemporary( req, res, next ){
 function update( req, res, next ){
 
   if ( !req.body.task ) {
-    return next( { message: 'no data found in request body. body:{modelName:{...fields}}' } );
+    return next( new BodyFormatError() );
   }
 
+
   const dataModel = provideFromReq( req );
-  dataModel.owner_account_uuid = req.account.account_uuid; // current user
-  dataModel.op_status_id = opStatus.temp;
+  delete dataModel.owner_account_uuid;//= req.account.account_uuid; // current user
+  delete dataModel.op_status_id;//= opStatus.temp;
 
   task
     .findById( dataModel.task_uuid, { attributes: [ 'op_status_id' ] } )
@@ -50,12 +51,55 @@ function update( req, res, next ){
     .then( x =>{
 
       if ( !x ) {
-        return next( { message: `Not record found at task_uuid` } )
+        return next( new OperationError( 'Not record found at task_uuid' ) );
       }
 
       if ( x.op_status_id !== opStatus.temp ) {
-        return next( { message: 'Task must be in temp status.' } );
+        return next( new OperationError( 'Task must be in temp status.' ) );
       }
+
+      x
+        .updateAttributes( dataModel )
+
+        .then( u =>{
+          res.json( u );
+        } )
+
+        .catch( next );
+
+    } )
+
+    .catch( next );
+}
+
+function present( req, res, next ){
+
+  if ( !req.body.task ) {
+    return next( new BodyFormatError() );
+  }
+
+  const task_uuid = req.body.task[ 'task_uuid' ] || null;
+  if ( !task_uuid ) {
+    return next( new OperationError( 'no task_uuid provided' ) );
+  }
+
+  task
+    .findById( task_uuid )
+
+    .then( x =>{
+
+      if ( !x ) {
+        return next( new OperationError( 'Not record found at task_uuid' ) );
+      }
+
+      if ( x.op_status_id !== opStatus.temp ) {
+        return next( new OperationError( 'Task must be in temp status.' ) );
+      }
+
+      const dataModel = {
+        op_status_id: opStatus.active,
+      };
+
 
       x
         .updateAttributes( dataModel )
@@ -84,3 +128,4 @@ function provideFromReq( req ){
     op_status_id: Number( req.body.task[ 'op_status_id' ] || '0' )
   };
 }
+

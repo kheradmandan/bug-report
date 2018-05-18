@@ -86,7 +86,7 @@ CREATE SEQUENCE IF NOT EXISTS task_global_seq;
  --**************************************************************************************
  ------------------------------------- S E E D S ----------------------------------------
  
-INSERT INTO public.op_status (op_status_id,"name") VALUES (0,'default'),(1,'active'),(2,'temp'),(3,'removed');
+INSERT INTO public.op_status (op_status_id,"name") VALUES (0,'temp'),(1,'active'),(2,'closed'),(3,'removed');
 INSERT INTO public.op_flag   (op_flag_id,  "name") VALUES (0,'none'),(1,'warn'),(2,'panic');
 INSERT INTO public.op_role   (op_role_id,  "name") VALUES (0,'root'),(1,'admin'),(2,'manager'),(3,'client');
 
